@@ -1,13 +1,14 @@
 {
   "files": {
-    "main.css": "/goit-react-hw-03-image-finder/static/css/main.7acaea2f.css",
-    "main.js": "/goit-react-hw-03-image-finder/static/js/main.bc46ddd9.js",
+    "main.css": "/goit-react-hw-03-image-finder/static/css/main.6b65c85f.css",
+    "main.js": "/goit-react-hw-03-image-finder/static/js/main.583052e6.js",
     "index.html": "/goit-react-hw-03-image-finder/index.html",
-    "main.7acaea2f.css.map": "/goit-react-hw-03-image-finder/static/css/main.7acaea2f.css.map",
-    "main.bc46ddd9.js.map": "/goit-react-hw-03-image-finder/static/js/main.bc46ddd9.js.map"
+    "static/media/loupe_icon.svg": "/goit-react-hw-03-image-finder/static/media/loupe_icon.d4d594caeaa640b51cdcb6cf019e54be.svg",
+    "main.6b65c85f.css.map": "/goit-react-hw-03-image-finder/static/css/main.6b65c85f.css.map",
+    "main.583052e6.js.map": "/goit-react-hw-03-image-finder/static/js/main.583052e6.js.map"
   },
   "entrypoints": [
-    "static/css/main.7acaea2f.css",
-    "static/js/main.bc46ddd9.js"
+    "static/css/main.6b65c85f.css",
+    "static/js/main.583052e6.js"
   ]
 }
