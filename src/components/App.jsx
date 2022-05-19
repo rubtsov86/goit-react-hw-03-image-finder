@@ -22,11 +22,10 @@ class App extends React.Component {
       prevState.inputValue !== this.state.inputValue &&
       this.state.inputValue !== ''
     ) {
-      this.setState({ page: 1, showLoadMore: true });
       this.fetchImages();
     }
 
-    if (prevState.page !== this.state.page) {
+    if (prevState.page !== this.state.page && this.state.page !== 1) {
       this.setState({ loading: true });
       this.fetchImages();
     }
@@ -40,7 +39,7 @@ class App extends React.Component {
     const response = await axios.get('/search?query=react');
 
     if (response.data.hits.length === 0) {
-      alert('no images found, try something else');
+      this.alert('no images found, try something else');
       this.setState({ loading: false, inputValue: '' });
       return;
     }
@@ -58,21 +57,28 @@ class App extends React.Component {
       loading: false,
     });
 
+    if (!this.state.showLoadMore && totalImages !== response.data.totalHits) {
+      this.setState({ showLoadMore: true });
+    }
+
     if (totalImages === response.data.totalHits) {
       this.setState({ showLoadMore: false });
-      setTimeout(this.alertEndOfCollection, 1000);
+      setTimeout(() => this.alert('end of collection'), 500);
     }
   };
 
-  alertEndOfCollection = () => {
-    return alert('end of collection');
+  alert = message => {
+    return alert(message);
   };
 
   onSubmit = inputValue => {
     if (inputValue === '') {
       alert('nothing to show, fill input');
     }
-    this.setState({ inputValue, images: [] });
+    if (this.state.showLoadMore) {
+      this.setState({ showLoadMore: false });
+    }
+    this.setState({ inputValue, images: [], page: 1 });
   };
 
   onClickImage = e => {
