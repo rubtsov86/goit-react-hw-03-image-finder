@@ -10,22 +10,72 @@ import Modal from './Modal';
 class App extends React.Component {
   state = {
     images: [],
+    page: 1,
     inputValue: '',
     loading: false,
+    showLoadMore: false,
     showModal: '',
   };
 
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.inputValue !== this.state.inputValue &&
+      this.state.inputValue !== ''
+    ) {
+      this.setState({ page: 1, showLoadMore: true });
+      this.fetchImages();
+    }
+
+    if (prevState.page !== this.state.page) {
+      this.setState({ loading: true });
+      this.fetchImages();
+    }
+  }
+
+  fetchImages = async () => {
+    if (this.state.inputValue === '') {
+      return alert('nothing to show, fill input');
+    }
+    axios.defaults.baseURL = `https://pixabay.com/api/?q=${this.state.inputValue}&page=${this.state.page}&per_page=12&key=26229759-3aa7093be117df00e52b30f1f&image_type=photo&orientation=horizontal`;
+    const response = await axios.get('/search?query=react');
+
+    if (response.data.hits.length === 0) {
+      alert('no images found, try something else');
+      this.setState({ loading: false, inputValue: '' });
+      return;
+    }
+
+    const newArrayOfImages = response.data.hits.map(
+      ({ id, webformatURL, largeImageURL }) => {
+        return { id, webformatURL, largeImageURL };
+      }
+    );
+
+    const totalImages = this.state.images.length + newArrayOfImages.length;
+
+    this.setState({
+      images: [...this.state.images, ...newArrayOfImages],
+      loading: false,
+    });
+
+    if (totalImages === response.data.totalHits) {
+      this.setState({ showLoadMore: false });
+      setTimeout(this.alertEndOfCollection, 1000);
+    }
+  };
+
+  alertEndOfCollection = () => {
+    return alert('end of collection');
+  };
+
   onSubmit = inputValue => {
-    this.setState({ loading: true, inputValue, images: [] });
-    this.fetchImages(inputValue);
+    if (inputValue === '') {
+      alert('nothing to show, fill input');
+    }
+    this.setState({ inputValue, images: [] });
   };
 
   onClickImage = e => {
-    console.log(e.target.src);
-    console.log(
-      this.state.images.find(image => image.webformatURL === e.target.src)
-        .largeImageURL
-    );
     this.setState({
       showModal: this.state.images.find(
         image => image.webformatURL === e.target.src
@@ -37,26 +87,8 @@ class App extends React.Component {
     this.setState({ showModal: '' });
   };
 
-  fetchImages = async value => {
-    this.setState({ loading: true });
-    let page = this.state.images.length / 12 + 1;
-    axios.defaults.baseURL = `https://pixabay.com/api/?q=${value}&page=${page}&per_page=12&key=26229759-3aa7093be117df00e52b30f1f&image_type=photo&orientation=horizontal`;
-
-    const response = await axios.get('/search?query=react');
-
-    if (value !== this.state.inputValue) {
-      page = 1;
-    }
-
-    console.log(response.data);
-
-    if (this.state.images.length === response.data.totalHits) {
-      return alert('end of collection');
-    }
-    this.setState({
-      images: [...this.state.images, ...response.data.hits],
-      loading: false,
-    });
+  onClickLoadMore = e => {
+    this.setState(state => ({ page: state.page + 1 }));
   };
 
   render() {
@@ -66,9 +98,7 @@ class App extends React.Component {
 
         <ImageGallery images={this.state.images} onClick={this.onClickImage} />
         {this.state.loading && <Loader />}
-        {this.state.images.length !== 0 && !this.state.loading && (
-          <Button onClick={() => this.fetchImages(this.state.inputValue)} />
-        )}
+        {this.state.showLoadMore && <Button onClick={this.onClickLoadMore} />}
         {this.state.showModal && (
           <Modal image={this.state.showModal} onClick={this.onClickModal} />
         )}
