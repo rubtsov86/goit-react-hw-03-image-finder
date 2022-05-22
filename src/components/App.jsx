@@ -22,6 +22,7 @@ class App extends React.Component {
       prevState.inputValue !== this.state.inputValue &&
       this.state.inputValue !== ''
     ) {
+      this.setState({ loading: true });
       this.fetchImages();
     }
 
@@ -63,7 +64,6 @@ class App extends React.Component {
 
     if (totalImages === response.data.totalHits) {
       this.setState({ showLoadMore: false });
-      setTimeout(() => this.alert('end of collection'), 500);
     }
   };
 
